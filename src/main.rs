@@ -1,6 +1,11 @@
+mod formats;
+mod http_auth;
+
 use std::env;
 use std::error::Error;
-use digest_auth::{AuthorizationHeader, AuthContext};
+use chrono::prelude::*;
+use std::ops::Add;
+use chrono::Duration;
 
 fn main() -> Result<(), Box<dyn Error>> {
 
@@ -12,25 +17,13 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let password = env::var("MYENERGI_PASSWORD")?;
 
-    println!("Here!");
-
-    let myenergi_date = "2021-01-28";
+    let myenergi_date = formats::myenergi_date(&Utc::now().add(Duration::days(-1)));
 
     let url = format!("{}/cgi-jday-Z{}-{}", uri, zappi_sn, myenergi_date);
 
     let client = reqwest::blocking::Client::new();
-
-    let response_for_auth = client.get(&url).send()?;
-
-    let auth_prompt = response_for_auth.headers().get("www-authenticate")
-        .ok_or("No www-authenticate header present")?
-        .to_str()?;
-
-    let mut prompt = digest_auth::parse(auth_prompt)?;
-
-    let ctx = AuthContext::new(username, password, &url);
-
-    let auth_header = prompt.respond(&ctx)?.to_header_string();
+    let auth_header =
+        http_auth::get_auth_header_for(&client, uri, &username, &password)?;
 
     let response = client.get(&url).header(reqwest::header::AUTHORIZATION, &auth_header).send()?;
 
