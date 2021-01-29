@@ -6,6 +6,9 @@ use std::error::Error;
 use chrono::prelude::*;
 use std::ops::Add;
 use chrono::Duration;
+use std::collections::HashMap;
+
+use formats::MyenergiZappiData;
 
 fn main() -> Result<(), Box<dyn Error>> {
 
@@ -29,7 +32,12 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     println!("{}", response.status().as_str());
 
-    println!("{}", response.text()?);
+    let raw_daily_report: HashMap<String, Vec<MyenergiZappiData>> = response.json()?;
+
+    let daily_report = formats::fix_daily_report(raw_daily_report);
+
+    // let daily_report: HashMap<String, Vec<FixedMyenergiData>> = raw_daily_report.into();
+    println!("{:?}", daily_report);
 
     Ok(())
 }
