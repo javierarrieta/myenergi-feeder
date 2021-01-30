@@ -1,5 +1,6 @@
 mod formats;
 mod http_auth;
+mod influxdb;
 
 use std::env;
 use std::error::Error;
@@ -19,6 +20,12 @@ fn main() -> Result<(), Box<dyn Error>> {
     let username = env::var("MYENERGI_USERNAME")?;
 
     let password = env::var("MYENERGI_PASSWORD")?;
+
+    let influxdb_username = env::var("INFLUXDB_USERNAME")?;
+
+    let influxdb_password = env::var("INFLUXDB_PASSWORD")?;
+
+    let influxdb_url = env::var("INFLUXDB_URL")?;
 
     let myenergi_date = formats::myenergi_date(&Utc::now().add(Duration::days(-1)));
 
@@ -40,6 +47,11 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // let daily_report: HashMap<String, Vec<FixedMyenergiData>> = raw_daily_report.into();
     println!("{:?}", daily_report);
+
+    for (device, report) in daily_report.iter() {
+        influxdb::publish_zappi_report(&client, &influxdb_url, &influxdb_username, &influxdb_password,
+        device, report)?;
+    }
 
     Ok(())
 }
