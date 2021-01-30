@@ -1,0 +1,6 @@
+language: rust
+rust:
+  - 1.49
+cache: cargo
+script:
+  - cargo build --release --verbose --workspace
