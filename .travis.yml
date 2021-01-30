@@ -4,4 +4,4 @@ rust:
 cache: cargo
 script:
   - cargo build --release --verbose --workspace
-  - docker build -t javierarrieta/myenergi-feeder:latest .
+  - sh docker_login.sh && docker build -t javierarrieta/myenergi-feeder:latest . && docker push javierarrieta/myenergi-feeder:latest
