@@ -30,7 +30,9 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let response = client.get(&url).header(reqwest::header::AUTHORIZATION, &auth_header).send()?;
 
-    println!("{}", response.status().as_str());
+    println!("{}", &response.status().as_str());
+
+    // println!("{:?}", &response.text()?);
 
     let raw_daily_report: HashMap<String, Vec<MyenergiZappiData>> = response.json()?;
 

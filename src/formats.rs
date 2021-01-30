@@ -13,9 +13,9 @@ pub struct MyenergiZappiData {
     dom: u8,
     mon: u8,
     yr: u16,
-    imp: i32,
-    v1: u32,
-    frq: u32,
+    imp: Option<i32>,
+    v1: Option<u32>,
+    frq: Option<u32>,
     nect1: Option<i32>,
     h1b: Option<i32>,
 }
@@ -35,9 +35,9 @@ impl From<&MyenergiZappiData> for FixedMyenergiData {
         FixedMyenergiData {
             datetime: Utc.ymd(data.yr as i32, data.mon as u32, data.dom as u32)
                 .and_hms(data.hr.unwrap_or(0) as u32, data.min.unwrap_or(0) as u32, 0),
-            imported: data.imp as f32 / 60.0,
-            voltage: data.v1 as f32 / 10.0,
-            frequency: data.frq as f32 / 100.0,
+            imported: data.imp.map(|n| n as f32 / 60.0).unwrap_or(0.0),
+            voltage: data.v1.map(|n| n as f32 / 10.0).unwrap_or(0.0),
+            frequency: data.frq.map(|n| n as f32 / 100.0).unwrap_or(0.0),
             clamp1: data.nect1.map(|n| n as f32 / 60.0).unwrap_or(0.0),
             zappi1: data.h1b.map(|n| n as f32 / 60.0).unwrap_or(0.0),
         }
