@@ -15,20 +15,22 @@ pub fn publish_zappi_report(client: &Client, url: &str, influxdb_username: &str,
 fn publish_zappi_data(client: &Client, url: &str, influxdb_username: &str, influxdb_password: &str,
                       device: &str, data: &FixedMyenergiData) -> Result<(), Box<dyn Error>> {
 
-    client.post(url).basic_auth(influxdb_username, Some(influxdb_password))
-        .body(format!("power,device={},circuit=grid value={:.3}", device, data.imported)).send()?;
+                        let timestamp: i64 = data.datetime.timestamp_nanos();
 
     client.post(url).basic_auth(influxdb_username, Some(influxdb_password))
-        .body(format!("power,device={},circuit=zappi value={:.3}", device, data.zappi1)).send()?;
+        .body(format!("power,device={},circuit=grid value={:.3} {}", device, data.imported, timestamp)).send()?;
 
     client.post(url).basic_auth(influxdb_username, Some(influxdb_password))
-        .body(format!("power,device={},circuit=house value={:.3}", device, data.clamp1)).send()?;
+        .body(format!("power,device={},circuit=zappi value={:.3} {}", device, data.zappi1, timestamp)).send()?;
 
     client.post(url).basic_auth(influxdb_username, Some(influxdb_password))
-        .body(format!("voltage,device={},circuit=grid value={:.3}", device, data.voltage)).send()?;
+        .body(format!("power,device={},circuit=house value={:.3} {}", device, data.clamp1, timestamp)).send()?;
 
     client.post(url).basic_auth(influxdb_username, Some(influxdb_password))
-        .body(format!("frequency,device={},circuit=grid value={:.3}", device, data.frequency)).send()?;
+        .body(format!("voltage,device={},circuit=grid value={:.3} {}", device, data.voltage, timestamp)).send()?;
+
+    client.post(url).basic_auth(influxdb_username, Some(influxdb_password))
+        .body(format!("frequency,device={},circuit=grid value={:.3} {}", device, data.frequency, timestamp)).send()?;
 
     return Ok(());
 }

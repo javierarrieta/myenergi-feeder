@@ -1,5 +1,8 @@
-FROM alpine:3.13
+FROM ubuntu:focal
 
-COPY target/release/myenergi-feeder /app
+RUN ["apt", "update"]
+RUN ["apt", "install", "libssl1.1"]
+
+COPY target/release/myenergi-feeder /app/myenergi-feeder
 
 ENTRYPOINT ["/app/myenergi-feeder"]
