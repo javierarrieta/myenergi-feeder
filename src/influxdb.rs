@@ -24,9 +24,6 @@ fn publish_zappi_data(client: &Client, url: &str, influxdb_username: &str, influ
         .body(format!("power,device={},circuit=zappi value={:.3} {}", device, data.zappi1, timestamp)).send()?;
 
     client.post(url).basic_auth(influxdb_username, Some(influxdb_password))
-        .body(format!("power,device={},circuit=house value={:.3} {}", device, data.clamp1, timestamp)).send()?;
-
-    client.post(url).basic_auth(influxdb_username, Some(influxdb_password))
         .body(format!("voltage,device={},circuit=grid value={:.3} {}", device, data.voltage, timestamp)).send()?;
 
     client.post(url).basic_auth(influxdb_username, Some(influxdb_password))
