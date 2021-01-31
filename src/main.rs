@@ -8,10 +8,14 @@ use chrono::prelude::*;
 use std::ops::Add;
 use chrono::Duration;
 use std::collections::HashMap;
+use log::{info, debug};
+use env_logger::Env;
 
 use formats::MyenergiZappiData;
 
 fn main() -> Result<(), Box<dyn Error>> {
+
+    env_logger::Builder::from_env(Env::default().default_filter_or("warn")).init();
 
     let uri = "https://s2.myenergi.net";
 
@@ -27,7 +31,18 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let influxdb_url = env::var("INFLUXDB_URL")?;
 
-    let myenergi_date = formats::myenergi_date(&Utc::now().add(Duration::days(-1)));
+    let args: Vec<String> = env::args().collect();
+
+    debug!("Arguments: {:?}", args);
+
+    let complete_datetime = args.get(1).map(|d| format!("{} 00:00:00", d));
+
+    let report_date = complete_datetime
+        .map(|d| Utc.datetime_from_str(&d, "%Y-%m-%d %H:%M:%S"))
+        .unwrap_or(Ok(Utc::now().add(Duration::days(-1))))?;
+    info!("Processing report for day {}", report_date);
+
+    let myenergi_date = formats::myenergi_date(&report_date);
 
     let url = format!("{}/cgi-jday-Z{}-{}", uri, zappi_sn, myenergi_date);
 
@@ -38,8 +53,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     let response = client.get(&url).header(reqwest::header::AUTHORIZATION, &auth_header).send()?;
 
     println!("{}", &response.status().as_str());
-
-    // println!("{:?}", &response.text()?);
 
     let raw_daily_report: HashMap<String, Vec<MyenergiZappiData>> = response.json()?;
 
