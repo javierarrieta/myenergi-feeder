@@ -27,7 +27,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let influxdb_url = env::var("INFLUXDB_URL")?;
 
-    let myenergi_date = formats::myenergi_date(&Utc::now().add(Duration::days(-2)));
+    let myenergi_date = formats::myenergi_date(&Utc::now().add(Duration::days(-1)));
 
     let url = format!("{}/cgi-jday-Z{}-{}", uri, zappi_sn, myenergi_date);
 
