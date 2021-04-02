@@ -3,6 +3,7 @@ rust:
   - 1.49
 cache: cargo
 dist: focal
+arch: arm64
 script:
   - cargo build --release --verbose --workspace
   - sh docker_login.sh && docker build -t javierarrieta/myenergi-feeder:latest . && docker push javierarrieta/myenergi-feeder:latest
