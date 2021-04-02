@@ -11,7 +11,8 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: stable
+          toolchain: 1.49
+          target: armv7-unknown-linux-gnueabihf
           override: true
       - uses: actions-rs/cargo@v1
         with:
