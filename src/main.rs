@@ -61,14 +61,14 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let response = client.get(&url).header(reqwest::header::AUTHORIZATION, &auth_header).send()?;
 
-    println!("{}", &response.status().as_str());
+    info!("Response status: {}", &response.status().as_str());
 
     let raw_daily_report: HashMap<String, Vec<MyenergiZappiData>> = response.json()?;
 
     let daily_report = formats::fix_daily_report(raw_daily_report);
 
     // let daily_report: HashMap<String, Vec<FixedMyenergiData>> = raw_daily_report.into();
-    println!("{:?}", daily_report);
+    debug!("Daily report: {:?}", daily_report);
 
     for (device, report) in daily_report.iter() {
         influxdb::publish_zappi_report(&client, &influxdb_url, &influxdb_username, &influxdb_password,
