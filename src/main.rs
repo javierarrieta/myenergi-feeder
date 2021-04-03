@@ -8,7 +8,7 @@ use chrono::prelude::*;
 use std::ops::Add;
 use chrono::Duration;
 use std::collections::HashMap;
-use log::{info, debug};
+use log::{info, debug, trace};
 use env_logger::Env;
 
 use formats::MyenergiZappiData;
@@ -30,6 +30,15 @@ fn main() -> Result<(), Box<dyn Error>> {
     let influxdb_password = env::var("INFLUXDB_PASSWORD")?;
 
     let influxdb_url = env::var("INFLUXDB_URL")?;
+
+    if env::var("DUMP_ENV").is_ok() {
+        trace!("ZAPPI_SN          '{}'", &zappi_sn);
+        trace!("MYENERGI_USERNAME '{}'", &username);
+        trace!("MYENERGI_PASSWORD '{}'", &password);
+        trace!("INFLUXDB_USERNAME '{}'", &influxdb_username);
+        trace!("INFLUXDB_PASSWORD '{}'", &influxdb_password);
+        trace!("INFLUXDB_URL      '{}'", &influxdb_url);
+    }
 
     let args: Vec<String> = env::args().collect();
 
