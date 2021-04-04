@@ -38,4 +38,4 @@ jobs:
         run: |
           docker buildx build --push --platform \
             linux/arm/v7,linux/arm64,linux/amd64 --tag \
-            javierarrieta/myenergi-feeder:$VERSION .
+            javierarrieta/myenergi-feeder:${{ steps.prepare.outputs.version }} .
