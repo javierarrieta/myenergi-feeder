@@ -14,7 +14,7 @@ RUN cargo build --release --workspace
 
 # Bundle Stage
 FROM ubuntu:20.04
-RUN apt update && apt install -y openssl
+RUN apt update && apt install -y openssl ca-certificates
 COPY --from=builder /usr/src/myenergi-feeder/target/release/myenergi-feeder /app/myenergi-feeder
 # USER 1000
 # COPY target/release/myenergi-feeder /app/myenergi-feeder
