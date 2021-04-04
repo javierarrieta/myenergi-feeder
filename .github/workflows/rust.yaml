@@ -16,7 +16,7 @@ jobs:
         id: prepare
         run: |
           DOCKER_PLATFORMS=linux/amd64,linux/arm64
-          VERSION=edge
+          VERSION=latest
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             VERSION=${GITHUB_REF#refs/tags/v}
           fi
@@ -37,5 +37,5 @@ jobs:
       - name: build and publish the image
         run: |
           docker buildx build --push --platform \
-            linux/arm/v7,linux/arm64,linux/amd64 --tag \
+            linux/arm64,linux/amd64 --tag \
             javierarrieta/myenergi-feeder:${{ steps.prepare.outputs.version }} .
