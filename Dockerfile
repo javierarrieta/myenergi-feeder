@@ -13,8 +13,8 @@ COPY src ./src
 RUN cargo build --release --workspace
 
 # Bundle Stage
-FROM alpine
-RUN apk update && apk add openssl
+FROM ubuntu:20.04
+RUN apt update && apt install openssl
 COPY --from=builder /usr/src/myenergi-feeder/target/release/myenergi-feeder /app/myenergi-feeder
 # USER 1000
 # COPY target/release/myenergi-feeder /app/myenergi-feeder
