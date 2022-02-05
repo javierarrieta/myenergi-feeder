@@ -17,7 +17,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     env_logger::Builder::from_env(Env::default().default_filter_or("warn")).init();
 
-    let uri = "https://s2.myenergi.net";
+    let hostname = "https://s18.myenergi.net";
 
     let zappi_sn = env::var("ZAPPI_SN")?;
 
@@ -53,11 +53,13 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let myenergi_date = formats::myenergi_date(&report_date);
 
-    let url = format!("{}/cgi-jday-Z{}-{}", uri, zappi_sn, myenergi_date);
+    let uri = format!("/cgi-jday-Z{}-{}", zappi_sn, myenergi_date);
+
+    let url = format!("{}{}", hostname, uri);
 
     let client = reqwest::blocking::Client::new();
     let auth_header =
-        http_auth::get_auth_header_for(&client, uri, &username, &password)?;
+        http_auth::get_auth_header_for(&client, &hostname, &uri, &username, &password)?;
 
     let response = client.get(&url).header(reqwest::header::AUTHORIZATION, &auth_header).send()?;
 
