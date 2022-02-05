@@ -6,6 +6,10 @@ on:
     tags:
       - v*
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
   check:
     name: build
@@ -43,4 +47,4 @@ jobs:
         run: |
           docker buildx build --push --platform \
             linux/amd64 --tag \
-            ${{ env.REGISTRY }}/javierarrieta/myenergi-feeder:${{ steps.prepare.outputs.version }} .
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.prepare.outputs.version }} .
