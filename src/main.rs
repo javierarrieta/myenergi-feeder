@@ -58,10 +58,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     let url = format!("{}{}", hostname, uri);
 
     let client = reqwest::blocking::Client::new();
-    let auth_header =
-        http_auth::get_auth_header_for(&client, &hostname, &uri, &username, &password)?;
 
-    let response = client.get(&url).header(reqwest::header::AUTHORIZATION, &auth_header).send()?;
+    let response = http_auth::get_with_digest_auth(&client, &url, &username, &password)?;
 
     info!("Response status: {}", &response.status().as_str());
 
