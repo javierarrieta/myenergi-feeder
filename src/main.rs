@@ -17,7 +17,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     env_logger::Builder::from_env(Env::default().default_filter_or("warn")).init();
 
-    let hostname = "https://s18.myenergi.net";
+    let director = "https://director.myenergi.net";
 
     let zappi_sn = env::var("ZAPPI_SN")?;
 
@@ -44,6 +44,15 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     debug!("Arguments: {:?}", args);
 
+    let client = reqwest::blocking::Client::new();
+
+    let director_response = http_auth::get_with_digest_auth(&client, director, &username, &password)?;
+
+    let hostname = director_response.headers().get("x_myenergi-asn")
+                            .ok_or("Cannot find x_myenergi-asn header in response")?.to_str()?;
+
+    info!("Using host {} to collect the data", hostname);
+
     let complete_datetime = args.get(1).map(|d| format!("{} 00:00:00", d));
 
     let report_date = complete_datetime
@@ -55,9 +64,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let uri = format!("/cgi-jday-Z{}-{}", zappi_sn, myenergi_date);
 
-    let url = format!("{}{}", hostname, uri);
-
-    let client = reqwest::blocking::Client::new();
+    let url = format!("https://{}{}", hostname, uri);
 
     let response = http_auth::get_with_digest_auth(&client, &url, &username, &password)?;
 
